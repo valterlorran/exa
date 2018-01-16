@@ -1,0 +1,13 @@
+{
+    "name": "valterlorran/exa",
+    "description": "Records the requests and then tests it.",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Valter Lorran",
+            "email": "valterlorran@hotmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {}
+}
