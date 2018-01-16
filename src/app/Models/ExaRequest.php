@@ -5,7 +5,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ExaRequest extends Model
 {
-	protected $fillable = ['url', 'method', 'regex', 'assertions', 'acting_user', 'acting_user_sql'];
+	protected $fillable = ['url', 'method', 'regex', 'assertions', 'acting_user', 'acting_user_sql', 'test'];
 
 	public function getAssertionsAttribute($value)
     {

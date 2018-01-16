@@ -3,6 +3,7 @@
         <table class="table table-striped">
             <thead>
                 <tr>
+                    <th width="30">Active</th>
                     <th>Method</th>
                     <th>Url</th>
                     <th>Actions</th>
@@ -10,6 +11,9 @@
             </thead>
             <tbody>
                 <tr v-for="request in requests">
+                    <td>
+                        <input type="checkbox" v-model="request.test" @change="updateRequest(request)">
+                    </td>
                     <td>
                         {{request.method}}
                     </td>
@@ -80,11 +84,23 @@
                     let response = await axios.delete('request/'+request.id);
                     this.requests.splice(this.requests.indexOf(request), 1);
                 }catch(e){
-                    request.locked = false;
+
                 }
+                request.locked = false;
             },
             view(r){
                 this.$router.push('/request/'+r.id);
+            },
+            async updateRequest(request){
+                request.locked = true;
+                try{
+                    let response = await axios.put('request/'+request.id, {
+                        test:request.test
+                    });
+                }catch(e){
+
+                }
+                request.locked = false;
             }
         }
     }

@@ -21,7 +21,14 @@ class ExaRequestController extends Controller
     public function update($id, Request $req)
     {
         $request = ExaRequest::find($id);
-        $request->assertions = $req->get('assertions');
+        if(!$request){
+            throw new \Exception("Error Processing Request", 1);
+            
+        }
+        $data = $req->all();
+        foreach ($data as $key => $value) {
+            $request->$key = $value;
+        }
         $request->save();
         return $request;
     }

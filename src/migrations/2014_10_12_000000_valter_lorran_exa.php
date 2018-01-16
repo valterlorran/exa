@@ -21,6 +21,7 @@ class ValterLorranExa extends Migration
             $table->string('regex', 500);
             $table->text('assertions')->nullable();
             $table->string('method', 10)->nullable();
+            $table->boolean('test')->default(true);
             $table->timestamps();
         });
 
