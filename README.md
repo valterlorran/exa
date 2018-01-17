@@ -1,5 +1,6 @@
-# New Document
-
+# Exa
+Exa is a Laravel package that records the routes usage and map all the inputs so you can run tests painless. 
+You can map the inputs to use random data, fixed value or get data from the database.
 
 ## Installation 
 
