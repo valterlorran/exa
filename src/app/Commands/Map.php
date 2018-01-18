@@ -3,6 +3,7 @@
 namespace ValterLorran\Exa\App\Commands;
 
 use Illuminate\Console\Command;
+use \ValterLorran\Exa\App\Models\ExaRequest;
 
 class Map extends Command
 {
@@ -17,6 +18,16 @@ class Map extends Command
 
     public function handle()
     {
-        
+
+        $requests = ExaRequest::whereTest(true)->with('maps')->get();
+        $bar = $this->output->createProgressBar(count($requests));
+
+        foreach ($requests as $request) {
+        	
+    		$bar->advance();
+        }
+
+		$bar->finish();
+		$this->line();
     }
 }

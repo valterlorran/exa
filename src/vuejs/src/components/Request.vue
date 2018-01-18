@@ -20,74 +20,7 @@
                 </p>
             </div>
         </div>
-        <div class="card">
-            <div class="card-body">
-                <h5>Assertions</h5>
-                <div v-if="request.assertions && request.assertions.length">
-                    <table class="table table-sm">
-                        <thead>
-                            <tr>
-                                <th>Assertions</th>
-                                <th>Options</th>
-                            </tr>
-                        </thead>
-                        <tr v-for="(assertion, index) in request.assertions">
-                            <td>
-                                <div v-if="!assertion.assertion">
-                                    Select an Assertion
-                                </div>
-                                <div v-else>
-                                    <p>
-                                        <button class="btn btn-sm btn-outline-dark" 
-                                            @click="assertion.showing_info = !assertion.showing_info">
-                                            ?
-                                        </button>
-                                        <strong>
-                                            {{assertion.assertion.fn}}(
-                                                <span v-for="param in Object.keys(assertion.assertion.data.params)">
-                                                    <input type="text" 
-                                                        v-model="assertion.params[param]" 
-                                                        :placeholder="assertion.assertion.data.params[param].types ? assertion.assertion.data.params[param].types.join(' | ') : ''">
-                                                </span>
-                                            )
-                                        </strong>
-                                    </p>
-
-                                    <div class="card" v-if="assertion.showing_info">
-                                        <div class="card-body">
-                                            <faker-row :faker="assertion.assertion" 
-                                            :no-btn-class="true"></faker-row>
-                                        </div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td width="250">
-                                <button class="btn btn-outline-dark btn-sm"
-                                    @click="$modal.show('assertion-types'); selected_assertion = assertion;">
-                                    {{assertion.assertion ? 'Change' :'Select'}} Assertion
-                                </button>
-                                <button class="btn btn-outline-danger pull-right btn-sm" 
-                                @click="removeAssertion(index)">
-                                    Remove
-                                </button>
-                            </td>
-                        </tr>
-                    </table>
-                    <modal name="assertion-types" height="auto" :scrollable="true" width="80%">
-                        <faker @input="selectedAssertion" 
-                            :data-list="listAssertions"
-                            placeholder="Search Assertion function"></faker>
-                    </modal>
-                </div>
-                <p v-else class="text-center">
-                    No assertions yet, click in button below to add.
-                </p>
-                <div class="text-right">
-                    <button class="btn btn-primary" @click="addAssertion()">Add Response Assertion</button>
-                    <button class="btn btn-success" @click="saveAssertions()">Save Assertions</button>
-                </div>
-            </div>
-        </div>
+        <assertions v-if="request.id" :request="request"></assertions>
         <br>
         <div class="card">
             <div class="card-body">
@@ -261,13 +194,14 @@
 <script>
     import Faker from './Faker.vue'
     import FakerRow from './FakerRow.vue';
+    import Assertions from './Assertions.vue';
     import _faker from '../options/faker2.js';
-    import _assertions from '../options/assertions.js';
     export default {
         name: 'Request',
         components:{
             'faker':Faker,
-            'faker-row':FakerRow
+            'faker-row':FakerRow,
+            'assertions':Assertions,
         },
         data () {
             return {
@@ -278,8 +212,7 @@
                 selected_map:{},
                 selected_faker:{},
                 rule:{},
-                faker_rule:{},
-                selected_assertion:null
+                faker_rule:{}
             }
         },
         async mounted(){
@@ -289,7 +222,6 @@
                 let response = await axios.get('request/'+this.$route.params.id);
                 if(response.data){
                     this.request = response.data;
-                    this.mountAssertions(this.request.assertions);
                     this.params_list = this.request.maps.filter(map => map.is_param);
                     this.list = this.request.maps.filter(map => !map.is_param);
                 }
@@ -298,50 +230,11 @@
                 console.log(e);
             }
         },
-        computed:{
-            listAssertions(){
-                return _assertions;
-            }
-        },
         methods:{
-            addAssertion(){
-                if(!this.request.assertions){
-                    this.$set(this.request, 'assertions', []);
-                }
-                this.request.assertions.push({
-                    assertion:null,
-                    showing_info:false,
-                    params:{}
-                });
-            },
-            selectedAssertion(assertion_data){
-                this.selected_assertion.assertion = assertion_data;
-                this.$modal.hide('assertion-types');
-            },
-            removeAssertion(index){
-                this.request.assertions.splice(index, 1);
-            },
             assertionParams(assertion){
                 return Object.keys(assertion.params).map(key => {
                     return assertion.params[key].value;
                 }).join(', ');
-            },
-            mountAssertions(assertions){
-                this.request.assertions = [];
-                if(!assertions){
-                    return;
-                }
-                assertions.map( assertion => {
-                    this.request.assertions.push({
-                        assertion:{
-                            fn:assertion.fn,
-                            data:_assertions[assertion.fn]
-                        },
-                        showing_info:false,
-                        params:assertion.params
-                    });
-                });
-                console.log(this.request.assertions)
             },
             async updateRequestActing(){
                 this.$modal.show('loading');
@@ -349,24 +242,6 @@
                     let response = await axios.put('request/'+this.request.id, {
                         acting_user:this.request.acting_user,
                         acting_user_sql:this.request.acting_user_sql,
-                    });
-                }catch(e){
-                    console.log(e);
-                }
-                this.$modal.hide('loading');
-            },
-            async saveAssertions(){
-                let assertions = this.request.assertions.map( assertion => {
-                    return {
-                        fn:assertion.assertion.fn,
-                        params:assertion.params
-                    }
-                });
-
-                this.$modal.show('loading');
-                try{
-                    let response = await axios.put('request/'+this.request.id, {
-                        assertions:JSON.stringify(assertions)
                     });
                 }catch(e){
                     console.log(e);

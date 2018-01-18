@@ -12,6 +12,7 @@ export default {
 
 <style>
 @import 'bootstrap/dist/css/bootstrap.min.css';
+@import 'jsoneditor/dist/jsoneditor.min.css';
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;

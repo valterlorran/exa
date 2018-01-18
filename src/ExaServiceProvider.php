@@ -24,11 +24,12 @@ class ExaServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->commands([
                 'ValterLorran\Exa\App\Commands\Flush',
+                'ValterLorran\Exa\App\Commands\Map',
             ]);
         }
         $this->publishes([
             __DIR__.'/vuejs/dist' => public_path('exa'),
-        ], 'public');
+        ], 'exa');
     }
 
     /**
